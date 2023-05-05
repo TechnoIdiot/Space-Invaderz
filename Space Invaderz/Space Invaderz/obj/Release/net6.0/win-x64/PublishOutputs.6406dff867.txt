@@ -1,0 +1,5 @@
+C:\Users\s2101082\OneDrive - Business College Helsinki\Tieto- ja viestintätekniikan opinnot\NETFrame\osa_2\Space Invaderz\Space Invaderz\Space Invaderz\bin\Release\net6.0\publish\win-x64\Space Invaderz.pdb
+C:\Users\s2101082\OneDrive - Business College Helsinki\Tieto- ja viestintätekniikan opinnot\NETFrame\osa_2\Space Invaderz\Space Invaderz\Space Invaderz\bin\Release\net6.0\publish\win-x64\data\images\playerShip2_green.png
+C:\Users\s2101082\OneDrive - Business College Helsinki\Tieto- ja viestintätekniikan opinnot\NETFrame\osa_2\Space Invaderz\Space Invaderz\Space Invaderz\bin\Release\net6.0\publish\win-x64\raylib.dll
+C:\Users\s2101082\OneDrive - Business College Helsinki\Tieto- ja viestintätekniikan opinnot\NETFrame\osa_2\Space Invaderz\Space Invaderz\Space Invaderz\bin\Release\net6.0\publish\win-x64\raylib.pdb
+C:\Users\s2101082\OneDrive - Business College Helsinki\Tieto- ja viestintätekniikan opinnot\NETFrame\osa_2\Space Invaderz\Space Invaderz\Space Invaderz\bin\Release\net6.0\publish\win-x64\Space Invaderz.exe
