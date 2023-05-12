@@ -8,7 +8,8 @@ namespace Space_Invaderz
         public enum GameState
         {
             Play,
-            ScoreScreen
+            ScoreScreen,
+            StartScreen
         }
         public static GameState state;
 
@@ -18,6 +19,7 @@ namespace Space_Invaderz
         const int screen_height = 980;
         public static int score;
         public static int lives;
+        public static List<Particles> particles = new List<Particles>();
 
         // Player configurations
         public static Player? player;
@@ -43,26 +45,38 @@ namespace Space_Invaderz
         public static int enemy_ActiveBullets;
         public static int enemyBulletLimit;
         public static Texture enemyImage;
-
+        /// <summary>
+        /// The beginning of the program
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Run();
         }
-
+        /// <summary>
+        /// Entry point of the game
+        /// </summary>
         private static void Run()
         {
             Raylib.InitWindow(screen_width, screen_height, "Space Invaderz");
             Raylib.SetTargetFPS(60);
-            Init();
+            state = GameState.StartScreen;
 
             while (Raylib.WindowShouldClose() == false)
             {
                 switch (state)
                 {
+                    case GameState.StartScreen:
+                        Raylib.BeginDrawing();
+                        Raylib.ClearBackground(Raylib.BLACK);
+                        DrawStartScreen();
+                        Raylib.EndDrawing();
+                        break;
                     case GameState.Play:
                         Update();
                         Draw();
                         break;
+
                     case GameState.ScoreScreen:
                         Raylib.BeginDrawing();
                         Raylib.ClearBackground(Raylib.BLACK);
@@ -74,7 +88,22 @@ namespace Space_Invaderz
 
             Raylib.CloseWindow();
         }
-
+        /// <summary>
+        /// Startscreen UI
+        /// </summary>
+        static void DrawStartScreen()
+        {
+            Raylib.DrawText("Space Invaderz!", screen_width / 2 - 250, 200, 60.0f, Raylib.WHITE);
+            bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2, 300, 100), "New game");
+            if (restart) 
+            {
+                Init();
+                state = GameState.Play;
+            }
+        }
+        /// <summary>
+        /// Scorescreen UI
+        /// </summary>
         static void DrawScoreScreen()
         {
             bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2, 300, 100), "New game");
@@ -86,22 +115,29 @@ namespace Space_Invaderz
                 state = GameState.Play;
             }
         }
+
+        /// <summary>
+        /// Required everytime the game starts/restarts.
+        /// </summary>
         static void Init()
         {
-            state = GameState.Play;
+            // Game variables
             score = 0;
             lives = 3;
 
+            // Player variables
             player_Size = 30;
-            player_Speed = 200;
+            player_Speed = 5;
             player_Color = Raylib.WHITE;
             playerImage = Raylib.LoadTexture("data/images/playerShip2_green.png");
 
+            // Bullet variables
             bullets.Clear();
             bullet_Size = 10;
             bullet_Color = Raylib.WHITE;
             enable_Bullets = false;
 
+            // Enemy variables
             enemies.Clear();
             enemy_Size = 25;
             enemy_Speed = 100;
@@ -127,6 +163,7 @@ namespace Space_Invaderz
                 bullets.Add(bullet);
             }
             Console.WriteLine(bullets.Count);
+
             // Spawn the enemies when game begins
             for (int i = 0; i < maxRow; i++)
             {
@@ -139,8 +176,16 @@ namespace Space_Invaderz
                 enemy_posY += 70;
                 enemy_posX = 20;
             }
+            particles.Clear();
+            for (int i = 0; i < 10; i++)
+            {
+                Particles particle = new Particles(15, 0.5f, false, new GameObject.Transform(new Vector2(0, 0), 10), random);
+                particles.Add(particle);
+            }
         }
-
+        /// <summary>
+        /// higher fps = more updates!!!111
+        /// </summary>
         static void Update()
         {
             PlayerUpdate();
@@ -148,7 +193,9 @@ namespace Space_Invaderz
             BulletUpdate(); // Handles most of hit reg
             WinLossCheck();
         }
-
+        /// <summary>
+        /// draw.
+        /// </summary>
         static void Draw()
         {
             Raylib.BeginDrawing();
@@ -163,38 +210,44 @@ namespace Space_Invaderz
             foreach (Bullet bullet in bullets)
             {
                 if (!bullet.isActive)
-                {
                     continue;
-                }
+
                 bullet.spriteRenderer.RectangleRender();
             }
             // Draw enemies
             foreach (Enemy enemy in enemies)
             {
                 if (!enemy.isActive)
-                {
                     continue;
-                }
 
                 enemy.spriteRenderer.SpriteRender(180.0f, 40.0f, 30.0f);
                 //enemy.spriteRenderer.RectangleRender();
             }
 
+            foreach(Particles particle in particles)
+            {
+                if (!particle.isActive)
+                    continue;
+
+                particle.Update();
+            }
+
             Raylib.DrawText($"Score: {score}", 10, 10, 16, Raylib.WHITE);
             Raylib.DrawText($"Lives: {lives}", 10, 36, 16, Raylib.WHITE);
-
+            
             Raylib.EndDrawing();
         }
 
-
+        /// <summary>
+        /// Updates every bullets status. Also handles hit reg. Feel like this is a bit unclean
+        /// </summary>
         static void BulletUpdate()
         {
             foreach (Bullet bullet in bullets)
             {
                 if (!bullet.isActive)
-                {
                     continue;
-                }
+
                 if (bullet.WhoShot().ToString() == "Player")
                 {
                     bullet.transform.MoveUp();
@@ -202,10 +255,8 @@ namespace Space_Invaderz
                     foreach (Enemy enemy in enemies)
                     {
                         if (!enemy.isActive)
-                        {
                             continue;
-                        }
-
+                        
                         if (bullet.collision.CheckCollision(enemy.transform.position, enemy.collision.object_size, enemy.collision.object_size))
                         {
                             enemy.Disable();
@@ -213,6 +264,7 @@ namespace Space_Invaderz
                             score += deadEnemies * 10;
                             deadEnemies++;
                             player.DecreasePlayerBulletCount();
+                            EnemyDeadge(enemy);
                         }
                     }
                 }
@@ -250,22 +302,13 @@ namespace Space_Invaderz
             }
         }
 
+        /// <summary>
+        /// Keeps player up to date
+        /// </summary>
         static void PlayerUpdate()
         {
             player.InvulnerabilityTimer();
-
-            // Keep player inside play area
-            if (!player.collision.CheckCollision(new Vector2(50, 10), screen_height, screen_width - 100))
-            {
-                float newX = Math.Clamp(player.transform.position.X, 10, screen_width - player.collision.object_size - 10);
-                float newY = Math.Clamp(player.transform.position.Y, 10, screen_height - player.collision.object_size);
-
-                bool xChange = newX != player.transform.position.X;
-                bool yChange = newY != player.transform.position.Y;
-
-                player.transform.position.X = newX;
-                player.transform.position.Y = newY;
-            }
+            player.KeepInsidePlayArea(screen_height, screen_width);
 
             // Side to side movement, also includes the input check
             player.moveUpdate();
@@ -276,9 +319,8 @@ namespace Space_Invaderz
                 foreach (Bullet bullet in bullets)
                 {
                     if (bullet.isActive)
-                    {
                         continue;
-                    }
+
                     if (!player.GetShootDelay())
                     {
                         player.Shoot(bullet);
@@ -288,23 +330,25 @@ namespace Space_Invaderz
             }
         }
 
+        /// <summary>
+        /// Keeps enemy up to date
+        /// </summary>
         static void EnemyUpdate()
         {
             foreach (Enemy enemy in enemies)
             {
+                // For some reason moving ScreenCollisionCheck inside enemy class allowed every enemy except for the last row to go past the left wall and this fixes that
+                if (changeDirection)
+                    continue;
                 enemy.transform.MoveRight();
                 // Enemy wall collision check
-                if (!enemy.collision.CheckCollision(new Vector2(50, 10), screen_height, screen_width - 100))
-                {
-                    changeDirection = true;
-                }
+                changeDirection = enemy.ScreenCollisionCheck(screen_height, screen_width);
             }
             if (changeDirection)
             {
                 foreach (Enemy enemy in enemies)
                 {
-                    enemy.transform.speed *= -1.0f;
-                    enemy.transform.position.Y += 5;
+                    enemy.ChangeDirection();
                 }
                 changeDirection = false;
             }
@@ -329,6 +373,9 @@ namespace Space_Invaderz
             }
         }
 
+        /// <summary>
+        /// Checks player lives and enemy amount. Handles enemy wave respawns
+        /// </summary>
         static void WinLossCheck()
         {
             if (lives == 0)
@@ -336,6 +383,9 @@ namespace Space_Invaderz
 
             foreach (Enemy enemy in enemies)
             {
+                if (!enemy.isActive)
+                    continue;
+
                 if (enemy.transform.position.Y == player.transform.position.Y - 10)
                 {
                     state = GameState.ScoreScreen;
@@ -367,6 +417,23 @@ namespace Space_Invaderz
                     enemy_posX = 20;
                 }
             }
+        }
+
+        static void EnemyDeadge(Enemy enemy)
+        {
+            bool particleonlyoncepls = false;
+            foreach(Particles particle in particles)
+            {
+                if (particle.isActive)
+                    continue;
+
+                if (!particleonlyoncepls)
+                {
+                    particle.Init(enemy);
+                    particleonlyoncepls = true;
+                }
+            }
+            particleonlyoncepls = false;
         }
     }
 }

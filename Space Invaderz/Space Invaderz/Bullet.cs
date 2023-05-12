@@ -25,23 +25,32 @@ namespace Space_Invaderz
 
         public Bullet(Vector2 position, int size, Color color, bool isActive, Texture texture)
         {
-            this.transform = new Transform(position, 200f);
+            this.transform = new Transform(position, 350f);
             collision = new Collision(transform, size);
             spriteRenderer = new SpriteRenderer(transform, color, collision.object_size, texture);
             this.isActive = isActive;
         }
 
+        /// <summary>
+        /// Disables bullet
+        /// </summary>
         public void Disable()
         {
             isActive = false;
         }
 
-        public void Activate(String shotBy)
+        /// <summary>
+        /// Activates bullet. Also saves who was it shot by
+        /// </summary>
+        public void Activate(string shotBy)
         {
             entity = Enum.Parse<ShotBy>(shotBy);
             isActive = true;
         }
 
+        /// <summary>
+        /// Returns who shot the bullet
+        /// </summary>
         public ShotBy WhoShot()
         {
             return entity;
