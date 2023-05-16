@@ -94,10 +94,8 @@ namespace Space_Invaderz
         {
             if (collision.CheckCollision(new Vector2(40, 10), screen_height, screen_width - 100))
             {
-                Console.WriteLine("False");
                 return false;
             }
-            Console.WriteLine("Outside the box");
             return true;
         }
     }

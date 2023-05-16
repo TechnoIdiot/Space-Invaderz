@@ -51,12 +51,22 @@ namespace Space_Invaderz
         /// Gets enemy and uses it to position the particle at the enemys position
         /// </summary>
         /// <param name="enemy"></param>
-        public void Init(Enemy enemy)
+        public void EnemyInit(Enemy enemy)
         {
             size = max_size;
             Vector2 direction = new Vector2(randomGenerator.Next(-1, 1), randomGenerator.Next(-1, 1));
             Vector2.Normalize(direction);
             transform.position = enemy.transform.position += direction;
+            isActive = true;
+            lifetime_left = max_lifetime;
+        }
+
+        public void PlayerInit(Player player)
+        {
+            size = max_size;
+            Vector2 direction = new Vector2(randomGenerator.Next(-1, 1), randomGenerator.Next(-1, 1));
+            Vector2.Normalize(direction);
+            transform.position = player.transform.position += direction;
             isActive = true;
             lifetime_left = max_lifetime;
         }

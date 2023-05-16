@@ -1,4 +1,5 @@
 ﻿using Raylib_CsLo;
+using System;
 using System.Numerics;
 
 namespace Space_Invaderz
@@ -95,7 +96,7 @@ namespace Space_Invaderz
         {
             Raylib.DrawText("Space Invaderz!", screen_width / 2 - 250, 200, 60.0f, Raylib.WHITE);
             bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2, 300, 100), "New game");
-            if (restart) 
+            if (restart)
             {
                 Init();
                 state = GameState.Play;
@@ -224,7 +225,7 @@ namespace Space_Invaderz
                 //enemy.spriteRenderer.RectangleRender();
             }
 
-            foreach(Particles particle in particles)
+            foreach (Particles particle in particles)
             {
                 if (!particle.isActive)
                     continue;
@@ -234,7 +235,7 @@ namespace Space_Invaderz
 
             Raylib.DrawText($"Score: {score}", 10, 10, 16, Raylib.WHITE);
             Raylib.DrawText($"Lives: {lives}", 10, 36, 16, Raylib.WHITE);
-            
+
             Raylib.EndDrawing();
         }
 
@@ -256,7 +257,7 @@ namespace Space_Invaderz
                     {
                         if (!enemy.isActive)
                             continue;
-                        
+
                         if (bullet.collision.CheckCollision(enemy.transform.position, enemy.collision.object_size, enemy.collision.object_size))
                         {
                             enemy.Disable();
@@ -280,6 +281,7 @@ namespace Space_Invaderz
                         {
                             player.EnablePlayerInvulnerability();
                             lives--;
+                            PlayerDamaged(player);
                         }
                         enemy_ActiveBullets--;
                     }
@@ -337,20 +339,17 @@ namespace Space_Invaderz
         {
             foreach (Enemy enemy in enemies)
             {
-                // For some reason moving ScreenCollisionCheck inside enemy class allowed every enemy except for the last row to go past the left wall and this fixes that
-                if (changeDirection)
-                    continue;
                 enemy.transform.MoveRight();
                 // Enemy wall collision check
                 changeDirection = enemy.ScreenCollisionCheck(screen_height, screen_width);
-            }
-            if (changeDirection)
-            {
-                foreach (Enemy enemy in enemies)
+                if (changeDirection)
                 {
-                    enemy.ChangeDirection();
+                    foreach (Enemy enemy1 in enemies)
+                    {
+                        enemy1.ChangeDirection();
+                    }
+                    changeDirection = false;
                 }
-                changeDirection = false;
             }
 
             if (enemy_ActiveBullets < enemyBulletLimit)
@@ -422,14 +421,31 @@ namespace Space_Invaderz
         static void EnemyDeadge(Enemy enemy)
         {
             bool particleonlyoncepls = false;
-            foreach(Particles particle in particles)
+            foreach (Particles particle in particles)
             {
                 if (particle.isActive)
                     continue;
 
                 if (!particleonlyoncepls)
                 {
-                    particle.Init(enemy);
+                    particle.EnemyInit(enemy);
+                    particleonlyoncepls = true;
+                }
+            }
+            particleonlyoncepls = false;
+        }
+
+        static void PlayerDamaged(Player player)
+        {
+            bool particleonlyoncepls = false;
+            foreach (Particles particle in particles)
+            {
+                if (particle.isActive)
+                    continue;
+
+                if (!particleonlyoncepls)
+                {
+                    particle.PlayerInit(player);
                     particleonlyoncepls = true;
                 }
             }
