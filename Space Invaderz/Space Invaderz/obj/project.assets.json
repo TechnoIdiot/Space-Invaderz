@@ -153,24 +153,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\mrpep\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\s2101082\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrpep\\Source\\Repos\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
+      "projectUniqueName": "C:\\Users\\s2101082\\OneDrive - Business College Helsinki\\Tiedostot\\new source\\space invade\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
       "projectName": "Space Invaderz",
-      "projectPath": "C:\\Users\\mrpep\\Source\\Repos\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
-      "packagesPath": "C:\\Users\\mrpep\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrpep\\Source\\Repos\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\obj\\",
+      "projectPath": "C:\\Users\\s2101082\\OneDrive - Business College Helsinki\\Tiedostot\\new source\\space invade\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
+      "packagesPath": "C:\\Users\\s2101082\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\s2101082\\OneDrive - Business College Helsinki\\Tiedostot\\new source\\space invade\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\mrpep\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\s2101082\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -217,7 +212,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

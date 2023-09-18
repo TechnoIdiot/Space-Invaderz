@@ -19,7 +19,7 @@ namespace Space_Invaderz
         public int playerBulletLimit = 4;
         private int activeBullets = 0;
         private bool playerInvulnerability = false;
-        double player_InvulnerabilityTimer = 3.0;
+        double player_InvulnerabilityTimer = 2.0;
         double lastInvulnerabilityTime;
 
         public Player(Vector2 position, int size, float maxSpeed, Color color, Texture texture)

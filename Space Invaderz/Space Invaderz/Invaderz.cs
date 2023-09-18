@@ -1,5 +1,4 @@
 ﻿using Raylib_CsLo;
-using System;
 using System.Numerics;
 
 namespace Space_Invaderz
@@ -10,7 +9,8 @@ namespace Space_Invaderz
         {
             Play,
             ScoreScreen,
-            StartScreen
+            StartScreen,
+            Options
         }
         public static GameState state;
 
@@ -21,6 +21,9 @@ namespace Space_Invaderz
         public static int score;
         public static int lives;
         public static List<Particles> particles = new List<Particles>();
+        static bool pause;
+        static bool options;
+        static bool developer = false;
 
         // Player configurations
         public static Player? player;
@@ -46,12 +49,16 @@ namespace Space_Invaderz
         public static int enemy_ActiveBullets;
         public static int enemyBulletLimit;
         public static Texture enemyImage;
+
         /// <summary>
         /// The beginning of the program
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            #if DEBUG
+                developer = true;
+            #endif
             Run();
         }
         /// <summary>
@@ -62,6 +69,7 @@ namespace Space_Invaderz
             Raylib.InitWindow(screen_width, screen_height, "Space Invaderz");
             Raylib.SetTargetFPS(60);
             state = GameState.StartScreen;
+            Raylib.SetExitKey(259); // Exit key is now backspace
 
             while (Raylib.WindowShouldClose() == false)
             {
@@ -70,7 +78,9 @@ namespace Space_Invaderz
                     case GameState.StartScreen:
                         Raylib.BeginDrawing();
                         Raylib.ClearBackground(Raylib.BLACK);
+
                         DrawStartScreen();
+
                         Raylib.EndDrawing();
                         break;
                     case GameState.Play:
@@ -86,34 +96,76 @@ namespace Space_Invaderz
                         break;
                 }
             }
-
             Raylib.CloseWindow();
         }
+
+        /// <summary>
+        /// Settings UI
+        /// </summary>
+        static void DrawOptions()
+        {
+            while (options)
+            {
+                Raylib.BeginDrawing();
+                Raylib.DrawRectangle(95, 295, 510, 510, Raylib.WHITE);
+                Raylib.DrawRectangle(100, 300, 500, 500, Raylib.BLACK);
+                Raylib.DrawText($"Options", 175, 300, 100, Raylib.WHITE);
+                bool back = RayGui.GuiButton(new Rectangle(190, 650, 300, 100), "Back");
+                if (back)
+                {
+                    options = false;
+                }
+                Raylib.EndDrawing();
+            }
+        }
+
         /// <summary>
         /// Startscreen UI
         /// </summary>
         static void DrawStartScreen()
         {
             Raylib.DrawText("Space Invaderz!", screen_width / 2 - 250, 200, 60.0f, Raylib.WHITE);
-            bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2, 300, 100), "New game");
+            Raylib.DrawText("Right arrow key = Move right", screen_width / 2 - 250, 270, 20.0f, Raylib.WHITE);
+            Raylib.DrawText("Down arrow key = Move down", screen_width / 2 - 250, 290, 20.0f, Raylib.WHITE);
+            Raylib.DrawText("Left arrow key = Move left", screen_width / 2 - 250, 310, 20.0f, Raylib.WHITE);
+            Raylib.DrawText("Up arrow key = Move up", screen_width / 2 - 250, 330, 20.0f, Raylib.WHITE);
+            Raylib.DrawText("Spacebar = Shoot", screen_width / 2 - 250, 350, 20.0f, Raylib.WHITE);
+            bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2 - 100, 300, 100), "New game");
+            bool option = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2 + 25, 300, 100), "Options");
+            bool exit = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2 + 150, 300, 100), "Exit Game");
             if (restart)
             {
-                Init();
                 state = GameState.Play;
+                Init();
+            }
+            if (option)
+            {
+                options = true;
+                DrawOptions();
+            }
+            if (exit)
+            {
+                Raylib.CloseWindow();
             }
         }
+
         /// <summary>
         /// Scorescreen UI
         /// </summary>
         static void DrawScoreScreen()
         {
             bool restart = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2, 300, 100), "New game");
+            bool exit = RayGui.GuiButton(new Rectangle(screen_width / 2 - 150, screen_height / 2 + 150, 300, 100), "Exit Game");
             Raylib.DrawText("Game over!", screen_width / 2 - 150, 200, 60.0f, Raylib.RED);
             Raylib.DrawText($"Score: {score}", screen_width / 2 - 75, 400, 30.0f, Raylib.RED);
             if (restart)
             {
                 Init();
                 state = GameState.Play;
+            }
+            if (exit)
+            {
+                Raylib.CloseWindow();
             }
         }
 
@@ -125,6 +177,7 @@ namespace Space_Invaderz
             // Game variables
             score = 0;
             lives = 3;
+            pause = false;
 
             // Player variables
             player_Size = 30;
@@ -141,7 +194,7 @@ namespace Space_Invaderz
             // Enemy variables
             enemies.Clear();
             enemy_Size = 25;
-            enemy_Speed = 100;
+            enemy_Speed = 50;
             enemy_Color = Raylib.RED;
             changeDirection = false;
             enemy_ActiveBullets = 0;
@@ -184,15 +237,63 @@ namespace Space_Invaderz
                 particles.Add(particle);
             }
         }
+
+        static void DeveloperMenu()
+        {
+            bool developMenu = true;
+            while (developMenu)
+            {
+                Raylib.BeginDrawing();
+                bool killAllEnemies = RayGui.GuiButton(new Rectangle(250, 1, 250, 500), "Kill all enemies");
+                bool exit = RayGui.GuiButton(new Rectangle(1, 1, 250, 500), "Exit dev menu");
+                if (killAllEnemies)
+                {
+                    foreach (Enemy enemy in enemies)
+                    {
+                        if (enemy.isActive)
+                        {
+                            enemy.Disable();
+                            deadEnemies++;
+                        }
+                    }
+                    Console.WriteLine("Enemies killed succesfully");
+                }
+                if (exit)
+                {
+                    developMenu = false;
+                }
+                Raylib.EndDrawing();
+            }
+        }
+
         /// <summary>
-        /// higher fps = more updates!!!111
+        /// higher fps = more updates!!!111 // Tulevaisuuden minä. Mitä on tämä?
         /// </summary>
         static void Update()
         {
-            PlayerUpdate();
-            EnemyUpdate();
-            BulletUpdate(); // Handles most of hit reg
-            WinLossCheck();
+            if (developer)
+            {
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_F1))
+                {
+                    DeveloperMenu();
+                }
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE))
+            {
+                if (!pause)
+                    pause = true;
+                else if (pause)
+                    pause = false;
+            }
+
+            if (!pause)
+            {
+                PlayerUpdate();
+                EnemyUpdate();
+                BulletUpdate(); // Handles most of hit reg
+                WinLossCheck();
+            }
         }
         /// <summary>
         /// draw.
@@ -225,7 +326,7 @@ namespace Space_Invaderz
                 //enemy.spriteRenderer.RectangleRender();
             }
 
-            foreach (Particles particle in particles)
+            foreach(Particles particle in particles)
             {
                 if (!particle.isActive)
                     continue;
@@ -235,6 +336,29 @@ namespace Space_Invaderz
 
             Raylib.DrawText($"Score: {score}", 10, 10, 16, Raylib.WHITE);
             Raylib.DrawText($"Lives: {lives}", 10, 36, 16, Raylib.WHITE);
+
+            if (pause)
+            {
+                Raylib.DrawRectangle(95, 295, 510, 510, Raylib.WHITE);
+                Raylib.DrawRectangle(100, 300, 500, 500, Raylib.BLACK);
+                Raylib.DrawText($"Paused", 175, 300, 100, Raylib.RED);
+                bool continuee = RayGui.GuiButton(new Rectangle(190, 400, 300, 100), "Continue");
+                bool option = RayGui.GuiButton(new Rectangle(190, 525, 300, 100), "Options");
+                bool back = RayGui.GuiButton(new Rectangle(190, 650, 300, 100), "Return to main menu");
+                if (continuee)
+                {
+                    pause = false;
+                }
+                if (option)
+                {
+                    options = true;
+                    DrawOptions();
+                }
+                if (back)
+                {
+                    state = GameState.StartScreen;
+                }
+            }
 
             Raylib.EndDrawing();
         }
@@ -257,7 +381,8 @@ namespace Space_Invaderz
                     {
                         if (!enemy.isActive)
                             continue;
-
+                        
+                        // Jos ammus osuu viholliseen?
                         if (bullet.collision.CheckCollision(enemy.transform.position, enemy.collision.object_size, enemy.collision.object_size))
                         {
                             enemy.Disable();
@@ -273,6 +398,7 @@ namespace Space_Invaderz
                 if (bullet.WhoShot().ToString() == "Enemy")
                 {
                     bullet.transform.MoveDown();
+
                     // Player collision check
                     if (bullet.collision.CheckCollision(player.transform.position, player.collision.object_size, player.collision.object_size))
                     {
@@ -281,7 +407,6 @@ namespace Space_Invaderz
                         {
                             player.EnablePlayerInvulnerability();
                             lives--;
-                            PlayerDamaged(player);
                         }
                         enemy_ActiveBullets--;
                     }
@@ -294,7 +419,6 @@ namespace Space_Invaderz
                     if (bullet.WhoShot().ToString() == "Enemy")
                     {
                         player.DecreasePlayerBulletCount();
-                        enemy_ActiveBullets--;
                     }
                     if (bullet.WhoShot().ToString() == "Player")
                     {
@@ -337,24 +461,29 @@ namespace Space_Invaderz
         /// </summary>
         static void EnemyUpdate()
         {
+            int chosenEnemy = random.Next(0, enemies.Count);
             foreach (Enemy enemy in enemies)
             {
+                // For some reason moving ScreenCollisionCheck inside enemy class allowed every enemy except for the last row to go past the left wall and this fixes that
+                if (changeDirection)
+                    continue;
                 enemy.transform.MoveRight();
                 // Enemy wall collision check
                 changeDirection = enemy.ScreenCollisionCheck(screen_height, screen_width);
-                if (changeDirection)
+            }
+            if (changeDirection)
+            {
+                foreach (Enemy enemy in enemies)
                 {
-                    foreach (Enemy enemy1 in enemies)
-                    {
-                        enemy1.ChangeDirection();
-                    }
-                    changeDirection = false;
+                    enemy.ChangeDirection();
                 }
+                // When the enemies bounce off the side of the screen, reset their ammo or like just let them shoot again ykyk
+                enemy_ActiveBullets = 0;
+                changeDirection = false;
             }
 
             if (enemy_ActiveBullets < enemyBulletLimit)
             {
-                int chosenEnemy = random.Next(0, enemies.Count);
                 foreach (Bullet bullet in bullets)
                 {
                     if (bullet.isActive)
@@ -421,31 +550,14 @@ namespace Space_Invaderz
         static void EnemyDeadge(Enemy enemy)
         {
             bool particleonlyoncepls = false;
-            foreach (Particles particle in particles)
+            foreach(Particles particle in particles)
             {
                 if (particle.isActive)
                     continue;
 
                 if (!particleonlyoncepls)
                 {
-                    particle.EnemyInit(enemy);
-                    particleonlyoncepls = true;
-                }
-            }
-            particleonlyoncepls = false;
-        }
-
-        static void PlayerDamaged(Player player)
-        {
-            bool particleonlyoncepls = false;
-            foreach (Particles particle in particles)
-            {
-                if (particle.isActive)
-                    continue;
-
-                if (!particleonlyoncepls)
-                {
-                    particle.PlayerInit(player);
+                    particle.Init(enemy);
                     particleonlyoncepls = true;
                 }
             }

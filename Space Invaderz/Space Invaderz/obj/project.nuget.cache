@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "RSKtQaXE175NPpDx12vYmnuXbLhmPxFLEOg1+VcznXMBINhG1c8rgCRuzrnAbJpRhB/GS6fzW8UlC0bGvPIfpg==",
+  "dgSpecHash": "XQ9TlbvYRwrSMsaICy0XFFgCndZ/G2TXzKUEzqDE+dzfsjt53+VXb+7mJzSjXHWCK2St81SGQLKNKACNuibYLw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\mrpep\\Source\\Repos\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
+  "projectFilePath": "C:\\Users\\s2101082\\OneDrive - Business College Helsinki\\Tiedostot\\new source\\space invade\\Space-Invaderz\\Space Invaderz\\Space Invaderz\\Space Invaderz.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\mrpep\\.nuget\\packages\\microsoft.toolkit.highperformance\\7.1.2\\microsoft.toolkit.highperformance.7.1.2.nupkg.sha512",
-    "C:\\Users\\mrpep\\.nuget\\packages\\raylib-cslo\\4.2.0.9\\raylib-cslo.4.2.0.9.nupkg.sha512"
+    "C:\\Users\\s2101082\\.nuget\\packages\\microsoft.toolkit.highperformance\\7.1.2\\microsoft.toolkit.highperformance.7.1.2.nupkg.sha512",
+    "C:\\Users\\s2101082\\.nuget\\packages\\raylib-cslo\\4.2.0.9\\raylib-cslo.4.2.0.9.nupkg.sha512"
   ],
   "logs": []
 }

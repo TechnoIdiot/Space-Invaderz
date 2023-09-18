@@ -15,7 +15,7 @@ namespace Space_Invaderz
         public bool movingLeft = false;
 
         // Bullet timing
-        double shootInterval = 0.2; // In seconds
+        double shootInterval = 1.0; // In seconds
         double lastShootTime;
 
         public Enemy(Vector2 position, int size, float speed, Color color, bool isActive, Texture texture)
@@ -96,6 +96,7 @@ namespace Space_Invaderz
             {
                 return false;
             }
+            Console.WriteLine("Screen edge collision");
             return true;
         }
     }
